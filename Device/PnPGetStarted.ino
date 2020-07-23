@@ -16,6 +16,9 @@ static bool messageSending = true;
 static uint64_t send_interval_ms;
 static const char model_id[] = "dtmi:com:mxchip:mxchip_iot_devkit:example:PnPGetStarted;1";
 static const char sampleProperties[] = "{\"sample\": \"DevKit-PnP-GetStarted\" }";
+static const char responseMessageFormat[] = "{\"message\": \"%s\" }";
+static const char* successResponse = "Successfully invoke device method";
+static const char* failResponse = "No method found";
 
 static float temperature;
 static float humidity;
@@ -39,6 +42,30 @@ static void InitWifi()
     hasWifi = false;
     Screen.print(1, "No Wi-Fi\r\n ");
   }
+}
+
+static void BuildCommandResponse(unsigned char** response, int* response_size, const char* message) 
+{
+  int responseBuilderSize = 0;
+  unsigned char* responseBuilder = NULL;
+  int result = 200;
+
+  if ((responseBuilderSize = snprintf(NULL, 0, responseMessageFormat, message)) < 0)
+  {
+    LogError("snprintf to determine string length for command response failed");
+  }
+  else if ((responseBuilder = (unsigned char*)calloc(1, responseBuilderSize + 1)) == NULL)
+  {
+    LogError("Unable to allocate %lu bytes", (unsigned long)(responseBuilderSize + 1));
+  }
+  else if ((responseBuilderSize = snprintf((char*)responseBuilder, responseBuilderSize + 1, responseMessageFormat, message)) < 0)
+  {
+    LogError("snprintf to output buffer for command response");
+  }
+
+  *response = responseBuilder;
+  *response_size = responseBuilderSize;
+  LogInfo("Response=<%s>", (const char*)responseBuilder);
 }
 
 static void SendConfirmationCallback(IOTHUB_CLIENT_CONFIRMATION_RESULT result)
@@ -82,7 +109,6 @@ static void DeviceTwinCallback(DEVICE_TWIN_UPDATE_STATE updateState, const unsig
 static int  DeviceMethodCallback(const char *methodName, const unsigned char *payload, int size, unsigned char **response, int *response_size)
 {
   LogInfo("Try to invoke method %s", methodName);
-  const char *responseMessage = "\"Successfully invoke device method\"";
   int result = 200;
 
   if (strcmp(methodName, "start") == 0)
@@ -98,13 +124,10 @@ static int  DeviceMethodCallback(const char *methodName, const unsigned char *pa
   else
   {
     LogInfo("No method %s found", methodName);
-    responseMessage = "\"No method found\"";
+    BuildCommandResponse(response, response_size, failResponse);
     result = 404;
   }
-
-  *response_size = strlen(responseMessage) + 1;
-  *response = (unsigned char *)strdup(responseMessage);
-
+  BuildCommandResponse(response, response_size, successResponse);
   return result;
 }
 
