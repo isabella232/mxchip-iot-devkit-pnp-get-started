@@ -7,7 +7,7 @@ languages:
 products:
 - azure
 - azure-iot-hub
-name: "Azure MXChip IoT DevKit Get Started with P你PDevice"
+name: "Azure MXChip IoT DevKit Get Started with PnP Device"
 description: "This is the GetStarted tutorial for IoT DevKit, please follow the guide to run it in IoT Workbench and use the DevKit as PnP device."
 urlFragment: "sample"
 ---
