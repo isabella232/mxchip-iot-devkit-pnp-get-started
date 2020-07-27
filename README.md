@@ -51,7 +51,7 @@ The IoT DevKit contains a rich gallery of samples that you can use to learn conn
 
 2. Click `F1` to open the command palette, type and select **Azure IoT Device Workbench: Open Examples...**. Then select **IoT DevKit** as board.
 
-3. In the IoT Workbench Examples page, find **Get Started with PnP Device** and click **Open Sample**. Then selects the default path to download the sample code.
+3. In the IoT Workbench Examples page, find **PnP Get Started** and click **Open Sample**. Then selects the default path to download the sample code.
 
     ![Open sample](media/iot-hub-arduino-devkit-az3166-get-started/getting-started/open-sample.png)
 
